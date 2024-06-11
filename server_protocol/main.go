@@ -17,8 +17,8 @@ func main() {
 		panic("failed to initialize peer!")
 	}
 
-    handlerFunc := httphandlers.InitHandleReq(&p)
-    http.HandleFunc(httphandlers.APIEndpoint, handlerFunc)
-    log.Print("Launching peer")
-    log.Fatal(http.ListenAndServe(":8080", nil))
+	handlerFunc := httphandlers.InitHandleReq(&p)
+	http.HandleFunc(httphandlers.APIEndpoint, handlerFunc)
+	log.Print("Launching peer")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }

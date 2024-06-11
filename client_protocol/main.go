@@ -14,16 +14,13 @@ func main() {
 		log.Fatal("please provide key as well as filepath")
 	}
 
-    client := client.NewClient[string]()
+    client := client.NewClient()
 	peerID := uint32(0)
     peerAddr := address.NewAddress("127.0.0.1", 8080)
 
     client.AddConnection(peerID, peerAddr)
 
     data := []byte("Hello, world!")
-    
-    log.Print(data)
-
     if os.Args[1] == "PUT" {
         err := client.MakePutRequest(peerID, "key", data)
         if err != nil {
