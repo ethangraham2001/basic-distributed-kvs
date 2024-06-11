@@ -17,7 +17,7 @@ func TestReadConfig(t *testing.T) {
             Port: 12345
     `)
 
-	expected := NewPeer[int, int](0)
+	expected := newPeer[int, int](0)
 	expected.addConnection(1, Address{IP: net.ParseIP("127.0.0.1"), Port: 8000})
 	expected.addConnection(2, Address{IP: net.ParseIP("127.0.0.1"), Port: 12345})
 	actual, err := readConfig[int, int](data)

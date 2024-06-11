@@ -22,7 +22,7 @@ type Peer[K comparable, V any] struct {
 }
 
 // NewPeer initializes a new Peer from a configuration file
-func NewPeer[K comparable, V any](ID uint32) Peer[K, V] {
+func newPeer[K comparable, V any](ID uint32) Peer[K, V] {
 	d := datastore.NewInMemoryDataStore[K, V]()
 	return Peer[K, V]{
 		ID:          ID,

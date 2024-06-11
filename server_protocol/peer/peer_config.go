@@ -8,13 +8,16 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// PeerConfig represents the structure of the config.yaml file used for
+// Config represents the structure of the config.yaml file used for
 // configuring peers
 type Config struct {
-	Id    uint32
+	ID    uint32
 	Peers map[uint32]marshalledAddress
 }
 
+// same structure as address, but taking a string as parameter for 
+// compatibility with the yaml package. The IP address is parsed into
+// a net.IP object manually
 type marshalledAddress struct {
 	IP   string
 	Port uint32
@@ -46,7 +49,7 @@ func readConfig[K comparable, V any](data []byte) (Peer[K, V], error) {
 		return p, err
 	}
 
-	p = NewPeer[K, V](c.Id)
+	p = newPeer[K, V](c.ID)
 	for id, marshalledAddress := range c.Peers {
 		ip := net.ParseIP(marshalledAddress.IP)
 		addr := Address{IP: ip, Port: uint16(marshalledAddress.Port)}

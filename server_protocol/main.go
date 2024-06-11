@@ -15,5 +15,5 @@ func main() {
         panic("failed to initialize peer!")
     }
 
-    fmt.Println(p.ID)
+    fmt.Printf("Current Peer-ID: %d\n", p.ID)
 }
