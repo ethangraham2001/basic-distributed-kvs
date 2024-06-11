@@ -21,6 +21,18 @@ type Peer[K comparable, V any] struct {
 	connections map[uint32]Address
 }
 
+// GetFromDatastore returns the value with key `key` from the Peer's
+// datastore
+func (p *Peer[K, V]) GetFromDatastore(key K) (V, error) {
+	value, err := p.datastore.Get(key)
+	return value, err
+}
+
+// PutInDataStore puts `(key, value)` into the Peer's datastore
+func (p *Peer[K, V]) PutInDataStore(key K, value V) {
+	p.datastore.Put(key, value)
+}
+
 // NewPeer initializes a new Peer from a configuration file
 func newPeer[K comparable, V any](ID uint32) Peer[K, V] {
 	d := datastore.NewInMemoryDataStore[K, V]()

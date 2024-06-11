@@ -15,7 +15,7 @@ type Config struct {
 	Peers map[uint32]marshalledAddress
 }
 
-// same structure as address, but taking a string as parameter for 
+// same structure as address, but taking a string as parameter for
 // compatibility with the yaml package. The IP address is parsed into
 // a net.IP object manually
 type marshalledAddress struct {
