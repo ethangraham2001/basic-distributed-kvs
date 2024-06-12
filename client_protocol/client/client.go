@@ -4,6 +4,7 @@ package client
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -22,11 +23,16 @@ const contentTypeOctetStream string = "application/octet-stream"
 type Client struct {
 	// connections maps Peer identifiers to their Address
 	connections map[uint32]address.Address
+
+	// NumPeers is the number of available peers in the network. Can be used
+	// to compute `hash(key) % NumPeers` in order to find the identifier of the
+	// peer that is responsible for storing a given key
+	NumPeers uint32
 }
 
 // NewClient initializes and returns a new Client
-func NewClient() Client {
-	return Client{connections: make(map[uint32]address.Address)}
+func NewClient(numPeers uint32) Client {
+	return Client{NumPeers: numPeers, connections: make(map[uint32]address.Address)}
 }
 
 // MakeGetRequest makes a get request to Peer with ID `peerId` and
@@ -39,10 +45,11 @@ func (c *Client) MakeGetRequest(peerID uint32, key string) ([]byte, error) {
 	if !valid {
 		return []byte{}, errors.New("Peer not found")
 	}
+	log.Printf("Making request to Peer_%d", peerID)
 
-    path := apiEndpoint + key
-    requestBody := []byte{}
-	req, err := http.NewRequest(http.MethodGet, addr.String() + path, bytes.NewBuffer(requestBody))
+	path := apiEndpoint + key
+	requestBody := []byte{}
+	req, err := http.NewRequest(http.MethodGet, addr.String()+path, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return []byte{}, err
 	}
@@ -66,39 +73,44 @@ func (c *Client) MakeGetRequest(peerID uint32, key string) ([]byte, error) {
 // assuming that this is done by the caller.
 func (c *Client) MakePutRequest(peerID uint32, key string, value []byte) error {
 	addr, valid := c.connections[peerID]
-
 	if !valid {
 		return errors.New("Peer not found")
 	}
+	log.Printf("Making request to Peer_%d", peerID)
 
-    path := apiEndpoint + key
-    
-    req, err := http.NewRequest(http.MethodPut, addr.String() + path, bytes.NewBuffer(value))
-    if err != nil {
-        log.Printf("Failed to create request. %s", err.Error())
-        return err
-    }
+	path := apiEndpoint + key
 
-    req.Header.Set(contentType, contentTypeOctetStream)
-    client := &http.Client{}
-    
-    resp, err := client.Do(req)
-    if err != nil {
-        log.Printf("Failed to communicate with server. %s", err.Error())
-        return err
-    }
-    defer resp.Body.Close()
+	req, err := http.NewRequest(http.MethodPut, addr.String()+path, bytes.NewBuffer(value))
+	if err != nil {
+		log.Printf("Failed to create request. %s", err.Error())
+		return err
+	}
 
-    _, err = io.ReadAll(resp.Body)
-    if err != nil {
-        log.Printf("failed to read response body %s", err.Error())
-        return err
-    }
+	req.Header.Set(contentType, contentTypeOctetStream)
+	client := &http.Client{}
 
-    return nil
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("Failed to communicate with server. %s", err.Error())
+		return err
+	}
+	defer resp.Body.Close()
+
+	_, err = io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("failed to read response body %s", err.Error())
+		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		errorMsg := fmt.Sprintf("PUT failed. Peer returned %s", resp.Status)
+		return errors.New(errorMsg)
+	}
+
+	return nil
 }
 
 // AddConnection adds a (peerID -> peerAddress) mapping to the client.
-func (c *Client) AddConnection(peerID uint32, peerAddr address.Address) {
+func (c *Client) addConnection(peerID uint32, peerAddr address.Address) {
 	c.connections[peerID] = peerAddr
 }

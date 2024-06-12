@@ -31,7 +31,7 @@ type getRequest[K comparable] struct {
 	Key K `json:"key"`
 }
 
-// InitHandleReq initializes and returns a HandlerFunc that handles get 
+// InitHandleReq initializes and returns a HandlerFunc that handles get
 // and put requests for a Peer p.
 // Get requests will return a raw byte array, which is why we contrain the
 // Peer.
@@ -47,7 +47,7 @@ func InitHandleReq(p *peer.Peer[string, []byte]) http.HandlerFunc {
 }
 
 func handleGet(w http.ResponseWriter, r *http.Request, p *peer.Peer[string, []byte]) {
-    key := getKeyFromURLPath(r.URL.Path)
+	key := getKeyFromURLPath(r.URL.Path)
 	log.Print("Received GET request")
 
 	data, err := p.GetFromDatastore(key)
@@ -61,21 +61,21 @@ func handleGet(w http.ResponseWriter, r *http.Request, p *peer.Peer[string, []by
 }
 
 func handlePut(w http.ResponseWriter, r *http.Request, p *peer.Peer[string, []byte]) {
-    log.Print("received PUT request")
-    if r.Header.Get(contentType) != contentTypeOctetStream {
-        http.Error(w, "Require octet stream", http.StatusUnsupportedMediaType)
-        return
-    }
+	if r.Header.Get(contentType) != contentTypeOctetStream {
+		http.Error(w, "Require octet stream", http.StatusUnsupportedMediaType)
+		return
+	}
 
-    data, err := io.ReadAll(r.Body)
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-    }
-    defer r.Body.Close()
+	log.Print("received PUT request")
+	data, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	defer r.Body.Close()
 
-    key := getKeyFromURLPath(r.URL.Path)
-    p.PutInDataStore(key, data)
-    w.WriteHeader(http.StatusOK)
+	key := getKeyFromURLPath(r.URL.Path)
+	p.PutInDataStore(key, data)
+	w.WriteHeader(http.StatusOK)
 }
 
 // decodes put request json and returns the key
@@ -92,6 +92,5 @@ func decodePutJSON[K comparable](r *http.Request) (K, error) {
 }
 
 func getKeyFromURLPath(url string) string {
-    return url[len(APIEndpoint):]
+	return url[len(APIEndpoint):]
 }
-

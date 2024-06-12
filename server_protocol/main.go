@@ -2,6 +2,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -18,7 +19,9 @@ func main() {
 	}
 
 	handlerFunc := httphandlers.InitHandleReq(&p)
+	portNum := p.GetConnection(p.ID).Port
+	portStr := fmt.Sprintf(":%d", portNum)
 	http.HandleFunc(httphandlers.APIEndpoint, handlerFunc)
-	log.Print("Launching peer")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Printf("Peer listening @ localhost:%d", portNum)
+	log.Fatal(http.ListenAndServe(portStr, nil))
 }

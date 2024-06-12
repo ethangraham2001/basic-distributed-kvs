@@ -33,7 +33,7 @@ func (p *Peer[K, V]) PutInDataStore(key K, value V) {
 	p.datastore.Put(key, value)
 }
 
-// NewPeer initializes a new Peer from a configuration file
+// newPeer initializes a new Peer from a configuration file
 func newPeer[K comparable, V any](ID uint32) Peer[K, V] {
 	d := datastore.NewInMemoryDataStore[K, V]()
 	return Peer[K, V]{
@@ -45,4 +45,10 @@ func newPeer[K comparable, V any](ID uint32) Peer[K, V] {
 
 func (p *Peer[K, V]) addConnection(id uint32, addr Address) {
 	p.connections[id] = addr
+}
+
+// GetConnection returns the addres of the Peer identified by ID. This can
+// be the Peer itself
+func (p *Peer[K, V]) GetConnection(id uint32) Address {
+	return p.connections[id]
 }

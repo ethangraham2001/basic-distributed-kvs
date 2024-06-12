@@ -15,11 +15,11 @@ type Address struct {
 
 // NewAddress initializes an Address and returns it
 func NewAddress(ipStr string, port uint16) Address {
-    return Address{ IP: net.ParseIP(ipStr), Port: port }
+	return Address{IP: net.ParseIP(ipStr), Port: port}
 }
 
 // String returns the string representation of an AddressTpe.
 // Of the form "<IP>:<Port>"
 func (addr *Address) String() string {
-    return fmt.Sprintf("http://%s:%d", addr.IP.String(), addr.Port)
+	return fmt.Sprintf("http://%s:%d", addr.IP.String(), addr.Port)
 }
