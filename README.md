@@ -7,27 +7,15 @@ client requests.
 
 Client-to-peer and peer-to-peer request are JSON formatted
 
-### Get() API
+### `Get()` API
 
-Expects an http `GET` with json request body
+Expects a `GET` http-request to `/api/<key>` and returns binary data in the
+form of an http response with `Content-Type: application/octet-stream` in the
+header.
 
-```json
-{
-    key: "<Some Key>"
-}
-```
+### `Put()` API
 
-Returns binary data.
-
-### Put() API
-
-Expects a http `PUT` with json request body
-
-```json
-{
-    key: "<Some Key>"
-}
-```
-
-with binary data in the request.
+Expects a `PUT` http-request to `/api/<key>` with binary data in the form of
+an http request containing `Content-Type: application/octet-stream` in the 
+header.
 
