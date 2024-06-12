@@ -25,3 +25,8 @@ Peers:
 The `Id` field should be different on every system, and the peer should appear
 in its own `Peers` map.
 
+## TODO
+
+- [ ] Implement data replication, and mechanism for fetching data from another
+peer if the provided key is not stored.
+
