@@ -5,8 +5,6 @@ client requests.
 
 ## Request API
 
-Client-to-peer and peer-to-peer request are JSON formatted
-
 ### `Get()` API
 
 Expects a `GET` http-request to `/api/<key>` and returns binary data in the
