@@ -12,9 +12,6 @@ import (
 	"github.com/ethangraham2001/distributed_kvs_server_protocol/peer"
 )
 
-// APIEndpoint is the only available Endpoint for now.
-const APIEndpoint string = "/api/"
-
 const contentType string = "Content-Type"
 const contentTypeOctetStream string = "application/octet-stream"
 const contentTypeJSON string = "application/json"
@@ -76,6 +73,16 @@ func handlePut(w http.ResponseWriter, r *http.Request, p *peer.Peer[string, []by
 	key := getKeyFromURLPath(r.URL.Path)
 	p.PutInDataStore(key, data)
 	w.WriteHeader(http.StatusOK)
+
+	// in this case, we must replicate to the next peer
+	if p.IsLastInPrefList(key) {
+		return
+	}
+
+	err = p.ReplicateToNextPeer(key, data)
+	if err != nil {
+		log.Printf("Failed to replicate to data to next peer. %s", err.Error())
+	}
 }
 
 // decodes put request json and returns the key
@@ -92,5 +99,5 @@ func decodePutJSON[K comparable](r *http.Request) (K, error) {
 }
 
 func getKeyFromURLPath(url string) string {
-	return url[len(APIEndpoint):]
+	return url[len(peer.APIEndpoint):]
 }

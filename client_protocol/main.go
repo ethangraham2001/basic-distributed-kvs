@@ -40,7 +40,7 @@ func main() {
 	}
 }
 
-// handleGet attempts to put a piece of data in the first peer from the
+// handlePut attempts to a piece of data in the first peer from the
 // preferences list, making its way down upon failure until success or
 // exhaustion of the list
 func handlePut(c *client.Client, key string, filePath string) {
@@ -67,7 +67,7 @@ success:
 	log.Printf("Data stored in Peer_%d", peerID)
 }
 
-// handlePet attempts to put get a piece of data in the first peer from the
+// handleGet attempts to put get a piece of data in the first peer from the
 // preferences list, making its way down upon failure until success or
 // exhaustion of the list
 func handleGet(c *client.Client, key string, filePath string) {
