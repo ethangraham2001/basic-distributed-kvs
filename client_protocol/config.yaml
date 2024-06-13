@@ -1,14 +1,15 @@
 # Example configuration for a four-peer system. 
+N: 1
 Peers:
   0:
     IP: 127.0.0.1
     Port: 50000
   1:
     IP: 127.0.0.1
-    Port: 50000
+    Port: 50001
   2:
     IP: 127.0.0.1
-    Port: 50000
+    Port: 50002
   3:
     IP: 127.0.0.1
-    Port: 50000
+    Port: 50003

@@ -23,16 +23,24 @@ const contentTypeOctetStream string = "application/octet-stream"
 type Client struct {
 	// connections maps Peer identifiers to their Address
 	connections map[uint32]address.Address
-
 	// NumPeers is the number of available peers in the network. Can be used
 	// to compute `hash(key) % NumPeers` in order to find the identifier of the
 	// peer that is responsible for storing a given key
 	NumPeers uint32
+	// N is the number of peers that a piece of data with key K is replicated
+	// to. It corresponds to the Size of the preferences list.
+	// e.g. if K maps to Peer_0 N = 1, then the data will be replicated to
+	// Peer_1.
+	// On failure of requesting data from the first peer in the prefernces list,
+	// the client will query the peers in the preferences list in order until
+	// a request is successful.
+	// Replication itself is handled by the peers.
+	N uint32
 }
 
 // NewClient initializes and returns a new Client
-func NewClient(numPeers uint32) Client {
-	return Client{NumPeers: numPeers, connections: make(map[uint32]address.Address)}
+func NewClient(numPeers uint32, n uint32) Client {
+	return Client{NumPeers: numPeers, connections: make(map[uint32]address.Address), N: n}
 }
 
 // MakeGetRequest makes a get request to Peer with ID `peerId` and

@@ -11,7 +11,8 @@ import (
 // Config represents the structure of the config.yaml file used for
 // configuring peers
 type Config struct {
-	Id    uint32                       `yaml:"Id"`
+	N     uint32                       `yaml:"N"`
+	ID    uint32                       `yaml:"ID"`
 	Peers map[uint32]marshalledAddress `yaml:"Peers"`
 }
 
@@ -49,7 +50,7 @@ func readConfig[K comparable, V any](data []byte) (Peer[K, V], error) {
 		return p, err
 	}
 
-	p = newPeer[K, V](c.Id)
+	p = newPeer[K, V](c.ID, c.N)
 	for id, marshalledAddress := range c.Peers {
 		ip := net.ParseIP(marshalledAddress.IP)
 		addr := Address{IP: ip, Port: uint16(marshalledAddress.Port)}

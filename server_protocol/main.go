@@ -21,7 +21,7 @@ func main() {
 	handlerFunc := httphandlers.InitHandleReq(&p)
 	portNum := p.GetConnection(p.ID).Port
 	portStr := fmt.Sprintf(":%d", portNum)
-	http.HandleFunc(httphandlers.APIEndpoint, handlerFunc)
+	http.HandleFunc(peer.APIEndpoint, handlerFunc)
 	log.Printf("Peer listening @ localhost:%d", portNum)
 	log.Fatal(http.ListenAndServe(portStr, nil))
 }

@@ -40,6 +40,9 @@ func main() {
 	}
 }
 
+// handlePut attempts to a piece of data in the first peer from the
+// preferences list, making its way down upon failure until success or
+// exhaustion of the list
 func handlePut(c *client.Client, key string, filePath string) {
 	data, err := util.ReadFile(filePath)
 	if err != nil {
@@ -47,23 +50,48 @@ func handlePut(c *client.Client, key string, filePath string) {
 	}
 
 	keyHash := util.HashKey(key)
-	peerID := keyHash % c.NumPeers
+	var peerID uint32
 
-	err = c.MakePutRequest(peerID, key, data)
-	if err != nil {
-		log.Fatalf(err.Error())
+	for i := uint32(0); i <= c.N; i++ {
+		peerID = (keyHash + i) % c.NumPeers
+		err = c.MakePutRequest(peerID, key, data)
+		if err != nil {
+			log.Printf("Failed to write to Peer_%d", peerID)
+		} else {
+			goto success
+		}
 	}
+	log.Fatalf("Failed to make PUT request. Peers unresponsive. %s", err.Error())
+
+success:
+	log.Printf("Data stored in Peer_%d", peerID)
 }
 
+// handleGet attempts to put get a piece of data in the first peer from the
+// preferences list, making its way down upon failure until success or
+// exhaustion of the list
 func handleGet(c *client.Client, key string, filePath string) {
 	keyHash := util.HashKey(key)
-	peerID := keyHash % c.NumPeers
 
-	data, err := c.MakeGetRequest(peerID, key)
-	if err != nil {
-		log.Fatal(err.Error())
+	var (
+		data   []byte
+		err    error
+		peerID uint32
+	)
+	for i := uint32(0); i <= c.N; i++ {
+		peerID = (keyHash + i) % c.NumPeers
+		data, err = c.MakeGetRequest(peerID, key)
+		if err != nil {
+			log.Printf("Failed to query Peer_%d", peerID)
+		} else {
+			goto write_data
+		}
 	}
+	log.Fatalf("Failed to make GET request. Peers unresponsive. %s", err.Error())
+	return
 
+write_data:
+	log.Printf("Data retrieved from Peer_%d", peerID)
 	err = util.WriteFile(filePath, data)
 	if err != nil {
 		log.Fatal(err.Error())
