@@ -13,6 +13,7 @@ import (
 // configuring peers
 type Config struct {
 	Peers map[uint32]marshalledAddress `yaml:"Peers"`
+	N     uint32                       `yaml:"N"`
 }
 
 // same structure as address, but taking a string as parameter for
@@ -49,7 +50,7 @@ func readConfig(data []byte) (Client, error) {
 		return c, err
 	}
 
-	c = NewClient(uint32(len(config.Peers)))
+	c = NewClient(uint32(len(config.Peers)), config.N)
 	for id, marshalledAddress := range config.Peers {
 		ip := net.ParseIP(marshalledAddress.IP)
 		addr := address.Address{IP: ip, Port: uint16(marshalledAddress.Port)}

@@ -1,5 +1,5 @@
 # Example configuration for a four-peer system. 
-Id: 0
+Id: 1
 Peers:
   0:
     IP: 127.0.0.1
