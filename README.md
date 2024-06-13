@@ -13,7 +13,7 @@ preference list either until success or until there are no peers left.
 
 ## Demo
 
-![Demo Video][res/demo.gif]
+![Demo Video](res/demo.gif)
 
 ### Explanation 
 
